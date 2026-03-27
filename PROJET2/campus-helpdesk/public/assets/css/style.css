@@ -1,5 +1,0 @@
-/* public/assets/css/style.css */
-:root{ --radius: 16px; }
-.card{ border-radius: var(--radius); }
-.navbar{ position: sticky; top: 0; z-index: 10; }
-
