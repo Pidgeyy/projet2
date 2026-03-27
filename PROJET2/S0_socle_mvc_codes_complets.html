@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S0  — Socle MVC (UwAmp) : BDD + Core + Auth + Dashboards + Sécurité</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f7fb;--ink:#111827;--muted:#6b7280;--codebg:#0b1220;--codeink:#e5e7eb;--line:rgba(17,24,39,.10);--soft:rgba(17,24,39,.04);--blue:rgba(13,110,253,.10);--green:rgba(22,163,74,.10);--amber:rgba(245,158,11,.10);--red:rgba(239,68,68,.10);}    
+    body{background:var(--bg);color:var(--ink);}    
+    .card{border-radius:18px;border:1px solid rgba(17,24,39,.08);box-shadow:0 10px 30px rgba(17,24,39,.06);}    
+    .muted{color:var(--muted);}    
+    pre{background:var(--codebg);color:var(--codeink);padding:14px 16px;border-radius:14px;overflow:auto;border:1px solid rgba(229,231,235,.12);margin:0;}    
+    .pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .6rem;border-radius:999px;background:var(--blue);border:1px solid rgba(13,110,253,.20);color:#0b4bb3;font-weight:800;font-size:.9rem;}    
+    .k{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:rgba(17,24,39,.06);border:1px solid rgba(17,24,39,.10);padding:.08rem .35rem;border-radius:.45rem;font-size:.95em;}    
+    .box{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.82);}    
+    .box.blue{background:var(--blue);border-color:rgba(13,110,253,.18);}    
+    .box.green{background:var(--green);border-color:rgba(22,163,74,.18);}    
+    .box.amber{background:var(--amber);border-color:rgba(245,158,11,.18);}    
+    .section-title{font-weight:900;letter-spacing:-.02em;display:flex;align-items:center;gap:.6rem;}    
+    .toc a{text-decoration:none;}    
+    .toc a:hover{text-decoration:underline;}    
+    .cyber{border-left:6px solid rgba(239,68,68,.70);background:rgba(239,68,68,.09);padding:12px 14px;border-radius:14px;border:1px solid rgba(239,68,68,.22);}  
+  </style>
+</head>
+<body>
+<header class="py-5" style="background:radial-gradient(1100px 420px at 12% 10%, rgba(13,110,253,.22), transparent 60%),radial-gradient(1000px 420px at 80% 0%, rgba(22,163,74,.14), transparent 55%),linear-gradient(180deg, #ffffff, rgba(255,255,255,.75));border-bottom:1px solid rgba(17,24,39,.08);">
+  <div class="container">
+    <div class="pill mb-3">🧱 Séance S0 </div>
+    <h1 class="display-6 fw-bold mb-2">Campus HelpDesk — S0 : BDD + Core + Auth + Dashboards + Sécurité</h1>
+    <p class="lead mb-0">Objectif : démarrer un projet <strong></strong> : BDD prête, routeur, connexion par <strong>session</strong> et pages par rôle. Chaque fois qu’un concept de cybersécurité est utilisé, il est annoncé et expliqué.</p>
+  </div>
+</header>
+
+<main class="container my-4 my-md-5">
+  <div class="row g-4">
+    <aside class="col-lg-4">
+      <div class="card p-4 sticky-lg-top" style="top:18px;">
+        <div class="section-title h5 mb-3">🗂️ Sommaire</div>
+        <ol class="toc mb-0">
+          <li><a href="#livrables">Livrables S0</a></li>
+          <li><a href="#arbo">Arborescence complète S0</a></li>
+          <li><a href="#sql">BDD : schema.sql + seed.sql</a></li>
+          <li><a href="#core">Core : Database + Auth + Router + View</a></li>
+          <li><a href="#mvc">MVC : Model + Controllers + Views</a></li>
+          <li><a href="#assets">Assets : CSS + JS</a></li>
+          <li><a href="#setup">Installation UwAmp + import BDD</a></li>
+          <li><a href="#tests">Tests</a></li>
+          <li><a href="#checklist">Checklist fin S0</a></li>
+        </ol>
+      </div>
+    </aside>
+
+    <section class="col-lg-8">
+      <div class="card p-4 p-md-5">
+
+        <section id="livrables">
+          <div class="section-title h4 mb-3">1) Livrables S0</div>
+          <div class="box green">
+            <ul class="mb-0">
+              <li>✅ BDD créée + 3 comptes test (ETUDIANT/TECH/ADMIN)</li>
+              <li>✅ MVC en place : <span class="k">public/index.php</span> route tout</li>
+              <li>✅ Auth session : login/logout</li>
+              <li>✅ Dashboard par rôle (3 vues)</li>
+              <li>✅ Sécurité : hash, prepare, htmlspecialchars, session_regenerate_id</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="arbo">
+          <div class="section-title h4 mb-3">2) Arborescence complète S0</div>
+<pre><code>campus-helpdesk/
+  public/
+    index.php
+    assets/
+      css/style.css
+      js/app.js
+  app/
+    core/
+      Database.php
+      Auth.php
+      Router.php
+      View.php
+    controllers/
+      AuthController.php
+      DashboardController.php
+    models/
+      UserModel.php
+    views/
+      layouts/main.php
+      partials/
+        navbar.php
+        alerts.php
+      auth/login.php
+      dashboards/
+        user.php
+        tech.php
+        admin.php
+  db/
+    schema.sql
+    seed.sql
+  tools/
+    generate_hash.php</code></pre>
+          <div class="box amber mt-3"><div class="fw-bold mb-1">URL de départ</div><div><span class="k">http://localhost/campus-helpdesk/public/</span></div></div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="sql">
+          <div class="section-title h4 mb-3">3) BDD : schema.sql + seed.sql</div>
+
+          <div class="cyber mb-3">
+            <div class="fw-bold">🔐 Cyber — Stockage des mots de passe (hash)</div>
+            <div>Risque : mots de passe en clair réutilisables. Protection : stockage d’une empreinte avec <span class="k">password_hash()</span>, vérification avec <span class="k">password_verify()</span>.</div>
+          </div>
+
+          <h3 class="h6 fw-bold mt-3 mb-2">db/schema.sql</h3>
+<pre><code>-- db/schema.sql
+DROP DATABASE IF EXISTS campus_helpdesk;
+CREATE DATABASE campus_helpdesk CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE campus_helpdesk;
+
+CREATE TABLE utilisateurs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(100) NOT NULL,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  mdp_hash VARCHAR(255) NOT NULL,
+  role ENUM('ETUDIANT','TECH','ADMIN') NOT NULL DEFAULT 'ETUDIANT',
+  actif TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">tools/generate_hash.php</h3>
+<pre><code>&lt;?php
+// tools/generate_hash.php
+echo password_hash("Demo1234!", PASSWORD_DEFAULT) . PHP_EOL;</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">db/seed.sql</h3>
+          <div class="box amber mb-2">Générez 3 hash et remplacez <span class="k">REPLACE_ME_...</span> (mot de passe conseillé : <span class="k">Demo1234!</span>).</div>
+<pre><code>-- db/seed.sql
+USE campus_helpdesk;
+
+INSERT INTO utilisateurs (nom, email, mdp_hash, role) VALUES
+('Etudiant Test', 'student@campus.local', '$2y$10$REPLACE_ME_STUDENT_HASH', 'ETUDIANT'),
+('Tech Test',     'tech@campus.local',    '$2y$10$REPLACE_ME_TECH_HASH',    'TECH'),
+('Admin Test',    'admin@campus.local',   '$2y$10$REPLACE_ME_ADMIN_HASH',   'ADMIN');</code></pre>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="core">
+          <div class="section-title h4 mb-3">4) Core : Database + Auth + Router + View</div>
+
+          <h3 class="h6 fw-bold mt-3 mb-2">app/core/Database.php</h3>
+          <div class="cyber mb-3"><div class="fw-bold">🔐 Cyber — PDO sécurisé (erreurs + prepares)</div><div>On active les exceptions et on désactive l’émulation pour favoriser des requêtes préparées réelles.</div></div>
+<pre><code>&lt;?php
+// app/core/Database.php
+declare(strict_types=1);
+
+final class Database {
+  private static ?PDO $pdo = null;
+
+  public static function pdo(): PDO {
+    if (self::$pdo === null) {
+      $dsn = "mysql:host=127.0.0.1;dbname=campus_helpdesk;charset=utf8mb4";
+      self::$pdo = new PDO($dsn, "root", "", [
+        PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES =&gt; false,
+      ]);
+    }
+    return self::$pdo;
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">app/core/Auth.php</h3>
+          <div class="cyber mb-3"><div class="fw-bold">🔐 Cyber — Contrôle d’accès serveur</div><div>Risque : accès direct à une URL. Protection : <span class="k">requireLogin()</span> et <span class="k">requireRole()</span>.</div></div>
+<pre><code>&lt;?php
+// app/core/Auth.php
+declare(strict_types=1);
+
+final class Auth {
+  public static function start(): void {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+      session_start();
+    }
+  }
+
+  public static function user(): ?array {
+    return $_SESSION['user'] ?? null;
+  }
+
+  public static function requireLogin(): void {
+    if (!self::user()) {
+      header("Location: /campus-helpdesk/public/index.php?route=login");
+      exit;
+    }
+  }
+
+  public static function requireRole(array $roles): void {
+    $role = ($_SESSION['user']['role'] ?? null);
+    if (!$role || !in_array($role, $roles, true)) {
+      http_response_code(403);
+      echo "&lt;h1&gt;403 Interdit&lt;/h1&gt;&lt;p&gt;Accès refusé.&lt;/p&gt;";
+      exit;
+    }
+  }
+
+  public static function logout(): void {
+    $_SESSION = [];
+    if (ini_get("session.use_cookies")) {
+      $params = session_get_cookie_params();
+      setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+      );
+    }
+    session_destroy();
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">app/core/View.php</h3>
+<pre><code>&lt;?php
+// app/core/View.php
+declare(strict_types=1);
+
+final class View {
+  public static function render(string $view, array $data = []): void {
+    extract($data, EXTR_SKIP);
+    require __DIR__ . "/../views/layouts/main.php";
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">app/core/Router.php</h3>
+<pre><code>&lt;?php
+// app/core/Router.php
+declare(strict_types=1);
+
+final class Router {
+  public static function dispatch(string $route): void {
+    switch ($route) {
+      case 'login':
+        (new AuthController())-&gt;login();
+        return;
+      case 'logout':
+        (new AuthController())-&gt;logout();
+        return;
+      case 'dashboard':
+        (new DashboardController())-&gt;dashboard();
+        return;
+      default:
+        (new DashboardController())-&gt;home();
+        return;
+    }
+  }
+}</code></pre>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="mvc">
+          <div class="section-title h4 mb-3">5) MVC : Model + Controllers + Views (S0)</div>
+
+          <h3 class="h6 fw-bold mt-3 mb-2">app/models/UserModel.php</h3>
+          <div class="cyber mb-3"><div class="fw-bold">🔐 Cyber — Injection SQL</div><div>Protection : requête préparée PDO (<span class="k">prepare</span> + <span class="k">execute</span>).</div></div>
+<pre><code>&lt;?php
+// app/models/UserModel.php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../core/Database.php';
+
+final class UserModel {
+  public function findByEmail(string $email): ?array {
+    $stmt = Database::pdo()-&gt;prepare(
+      "SELECT id, nom, email, mdp_hash, role, actif
+       FROM utilisateurs
+       WHERE email = :email
+       LIMIT 1"
+    );
+    $stmt-&gt;execute(['email' =&gt; $email]);
+    $u = $stmt-&gt;fetch();
+    return $u ?: null;
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">app/controllers/AuthController.php</h3>
+          <div class="cyber mb-3"><div class="fw-bold">🔐 Cyber — Validation + hash + session fixation</div><div>Après login : <span class="k">session_regenerate_id(true)</span> empêche la réutilisation d’un identifiant de session imposé.</div></div>
+<pre><code>&lt;?php
+// app/controllers/AuthController.php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../core/Auth.php';
+require_once __DIR__ . '/../core/View.php';
+require_once __DIR__ . '/../models/UserModel.php';
+
+final class AuthController {
+
+  public function login(): void {
+    Auth::start();
+    $error = null;
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      // 🔐 Cyber — filtration/validation d'entrée
+      $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '';
+      $password = (string)($_POST['password'] ?? '');
+
+      if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Email invalide.";
+      } elseif ($password === '') {
+        $error = "Mot de passe requis.";
+      } else {
+        $user = (new UserModel())-&gt;findByEmail(trim($email));
+
+        if (!$user || (int)$user['actif'] !== 1) {
+          $error = "Identifiants incorrects.";
+        } elseif (!password_verify($password, $user['mdp_hash'])) {
+          // 🔐 Cyber — vérification via hash
+          $error = "Identifiants incorrects.";
+        } else {
+          // 🔐 Cyber — anti session fixation
+          session_regenerate_id(true);
+
+          $_SESSION['user'] = [
+            'id' =&gt; (int)$user['id'],
+            'nom' =&gt; $user['nom'],
+            'email' =&gt; $user['email'],
+            'role' =&gt; $user['role'],
+          ];
+
+          header("Location: /campus-helpdesk/public/index.php?route=dashboard");
+          exit;
+        }
+      }
+    }
+
+    View::render('auth/login', [
+      'title' =&gt; 'Connexion',
+      'error' =&gt; $error
+    ]);
+  }
+
+  public function logout(): void {
+    Auth::start();
+    Auth::logout();
+    header("Location: /campus-helpdesk/public/index.php?route=login");
+    exit;
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">app/controllers/DashboardController.php</h3>
+<pre><code>&lt;?php
+// app/controllers/DashboardController.php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../core/Auth.php';
+require_once __DIR__ . '/../core/View.php';
+
+final class DashboardController {
+
+  public function home(): void {
+    Auth::start();
+    if (Auth::user()) {
+      header("Location: /campus-helpdesk/public/index.php?route=dashboard");
+      exit;
+    }
+    header("Location: /campus-helpdesk/public/index.php?route=login");
+    exit;
+  }
+
+  public function dashboard(): void {
+    Auth::start();
+    Auth::requireLogin();
+
+    $u = Auth::user();
+    $role = $u['role'];
+
+    if ($role === 'ADMIN') {
+      View::render('dashboards/admin', ['title' =&gt; 'Dashboard Admin', 'user' =&gt; $u]);
+      return;
+    }
+    if ($role === 'TECH') {
+      View::render('dashboards/tech', ['title' =&gt; 'Dashboard Technicien', 'user' =&gt; $u]);
+      return;
+    }
+    View::render('dashboards/user', ['title' =&gt; 'Dashboard Étudiant', 'user' =&gt; $u]);
+  }
+}</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">public/index.php</h3>
+<pre><code>&lt;?php
+// public/index.php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../app/controllers/AuthController.php';
+require_once __DIR__ . '/../app/controllers/DashboardController.php';
+require_once __DIR__ . '/../app/core/Router.php';
+
+$route = $_GET['route'] ?? '';
+Router::dispatch($route);</code></pre>
+
+          <h3 class="h6 fw-bold mt-4 mb-2">Views : layout + partials + pages</h3>
+          <div class="cyber mb-3"><div class="fw-bold">🔐 Cyber — XSS</div><div>Protection : <span class="k">htmlspecialchars()</span> sur chaque affichage dynamique (nom, rôle, message d’erreur…).</div></div>
+
+          <h4 class="h6 fw-bold mt-2 mb-2">app/views/layouts/main.php</h4>
+<pre><code>&lt;?php
+// app/views/layouts/main.php
+?&gt;
+&lt;!doctype html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;&lt;?= htmlspecialchars($title ?? 'Campus HelpDesk') ?&gt;&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+  &lt;link href="/campus-helpdesk/public/assets/css/style.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body class="bg-light"&gt;
+  &lt;?php require __DIR__ . '/../partials/navbar.php'; ?&gt;
+  &lt;main class="container py-4"&gt;
+    &lt;?php require __DIR__ . '/../partials/alerts.php'; ?&gt;
+    &lt;?php require __DIR__ . '/../' . $view . '.php'; ?&gt;
+  &lt;/main&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+  &lt;script src="/campus-helpdesk/public/assets/js/app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/partials/navbar.php</h4>
+<pre><code>&lt;?php
+require_once __DIR__ . '/../../core/Auth.php';
+Auth::start();
+$u = Auth::user();
+?&gt;
+&lt;nav class="navbar navbar-expand-lg bg-white border-bottom"&gt;
+  &lt;div class="container"&gt;
+    &lt;a class="navbar-brand fw-bold" href="/campus-helpdesk/public/"&gt;Campus HelpDesk&lt;/a&gt;
+    &lt;div class="ms-auto d-flex align-items-center gap-2"&gt;
+      &lt;span class="text-muted small"&gt;
+        &lt;?php if ($u): ?&gt;
+          &lt;?= htmlspecialchars($u['nom']) ?&gt; • &lt;?= htmlspecialchars($u['role']) ?&gt;
+        &lt;?php else: ?&gt;
+          Non connecté
+        &lt;?php endif; ?&gt;
+      &lt;/span&gt;
+      &lt;?php if ($u): ?&gt;
+        &lt;a class="btn btn-sm btn-outline-danger" href="/campus-helpdesk/public/index.php?route=logout"&gt;Déconnexion&lt;/a&gt;
+      &lt;?php else: ?&gt;
+        &lt;a class="btn btn-sm btn-primary" href="/campus-helpdesk/public/index.php?route=login"&gt;Connexion&lt;/a&gt;
+      &lt;?php endif; ?&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/partials/alerts.php</h4>
+<pre><code>&lt;?php if (!empty($error)): ?&gt;
+  &lt;div class="alert alert-danger"&gt;&lt;?= htmlspecialchars($error) ?&gt;&lt;/div&gt;
+&lt;?php endif; ?&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/auth/login.php</h4>
+<pre><code>&lt;div class="row justify-content-center"&gt;
+  &lt;div class="col-md-6 col-lg-5"&gt;
+    &lt;div class="card shadow-sm"&gt;
+      &lt;div class="card-body p-4"&gt;
+        &lt;h1 class="h4 fw-bold mb-3"&gt;Connexion&lt;/h1&gt;
+        &lt;form method="post" action="/campus-helpdesk/public/index.php?route=login" autocomplete="off"&gt;
+          &lt;div class="mb-3"&gt;
+            &lt;label class="form-label"&gt;Email&lt;/label&gt;
+            &lt;input type="email" name="email" class="form-control" required&gt;
+          &lt;/div&gt;
+          &lt;div class="mb-3"&gt;
+            &lt;label class="form-label"&gt;Mot de passe&lt;/label&gt;
+            &lt;input type="password" name="password" class="form-control" required&gt;
+          &lt;/div&gt;
+          &lt;button class="btn btn-primary w-100"&gt;Se connecter&lt;/button&gt;
+          &lt;p class="text-muted small mt-3 mb-0"&gt;
+            Comptes test : student@campus.local / tech@campus.local / admin@campus.local
+          &lt;/p&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/dashboards/user.php</h4>
+<pre><code>&lt;?php $u = $user; ?&gt;
+&lt;div class="card"&gt;&lt;div class="card-body"&gt;
+  &lt;h1 class="h5 fw-bold mb-1"&gt;Dashboard Étudiant&lt;/h1&gt;
+  &lt;div class="text-muted"&gt;Bonjour &lt;strong&gt;&lt;?= htmlspecialchars($u['nom']) ?&gt;&lt;/strong&gt;&lt;/div&gt;
+  &lt;div class="mt-3"&gt;S0 : placeholder. S1 ajoutera la liste des tickets.&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/dashboards/tech.php</h4>
+<pre><code>&lt;?php $u = $user; ?&gt;
+&lt;div class="card"&gt;&lt;div class="card-body"&gt;
+  &lt;h1 class="h5 fw-bold mb-1"&gt;Dashboard Technicien&lt;/h1&gt;
+  &lt;div class="text-muted"&gt;Bonjour &lt;strong&gt;&lt;?= htmlspecialchars($u['nom']) ?&gt;&lt;/strong&gt;&lt;/div&gt;
+  &lt;div class="mt-3"&gt;S0 : placeholder. S2 ajoutera le traitement des tickets.&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</code></pre>
+
+          <h4 class="h6 fw-bold mt-3 mb-2">app/views/dashboards/admin.php</h4>
+<pre><code>&lt;?php $u = $user; ?&gt;
+&lt;div class="card"&gt;&lt;div class="card-body"&gt;
+  &lt;h1 class="h5 fw-bold mb-1"&gt;Dashboard Admin&lt;/h1&gt;
+  &lt;div class="text-muted"&gt;Bonjour &lt;strong&gt;&lt;?= htmlspecialchars($u['nom']) ?&gt;&lt;/strong&gt;&lt;/div&gt;
+  &lt;div class="mt-3"&gt;S0 : placeholder. Bonus : gestion catégories/utilisateurs si temps.&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</code></pre>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="assets">
+          <div class="section-title h4 mb-3">6) Assets : CSS + JS</div>
+          <h3 class="h6 fw-bold mt-3 mb-2">public/assets/css/style.css</h3>
+<pre><code>/* public/assets/css/style.css */
+:root{ --radius: 16px; }
+.card{ border-radius: var(--radius); }
+.navbar{ position: sticky; top: 0; z-index: 10; }</code></pre>
+          <h3 class="h6 fw-bold mt-4 mb-2">public/assets/js/app.js</h3>
+          <div class="box amber mb-2">S0 : JS minimal. Les fetch arrivent en S1.</div>
+<pre><code>// public/assets/js/app.js
+console.log("Campus HelpDesk MVC — S0 prêt.");</code></pre>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="setup">
+          <div class="section-title h4 mb-3">7) Installation UwAmp + import BDD</div>
+          <div class="box">
+            <ol class="mb-0">
+              <li>Copier <span class="k">campus-helpdesk</span> dans le dossier <span class="k">www</span> de UwAmp.</li>
+              <li>Importer <span class="k">db/schema.sql</span> puis <span class="k">db/seed.sql</span> dans phpMyAdmin.</li>
+              <li>Ouvrir <span class="k">http://localhost/campus-helpdesk/public/</span></li>
+            </ol>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="tests">
+          <div class="section-title h4 mb-3">8) Tests</div>
+          <div class="box">
+            <ol class="mb-0">
+              <li>Login étudiant → dashboard étudiant</li>
+              <li>Login tech → dashboard tech</li>
+              <li>Login admin → dashboard admin</li>
+              <li>Logout → retour login</li>
+            </ol>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="checklist">
+          <div class="section-title h4 mb-3">9) Checklist fin S0</div>
+          <div class="box green">
+            <ul class="mb-0">
+              <li>☐ BDD importée + comptes test</li>
+              <li>☐ Routes : home/login/dashboard/logout</li>
+              <li>☐ Login OK + session</li>
+              <li>☐ Logout OK</li>
+              <li>☐ SQL : prepare/execute</li>
+              <li>☐ XSS : htmlspecialchars dans vues</li>
+              <li>☐ Session fixation : session_regenerate_id(true)</li>
+            </ul>
+          </div>
+          <div class="alert alert-primary mt-4 mb-0">🎯 Fin S0 : le socle MVC est prêt. S1 pourra ajouter tickets (SSR) + fetch.</div>
+        </section>
+
+      </div>
+    </section>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

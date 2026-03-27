@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sujet projet E5 — Campus HelpDesk (Ticketing)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f7fb; --ink:#111827; --muted:#6b7280;
+      --card:#ffffff; --codebg:#0b1220; --codeink:#e5e7eb;
+      --brand:#0d6efd; --good:#16a34a; --warn:#f59e0b; --danger:#ef4444;
+    }
+    body{background:var(--bg); color:var(--ink);}
+    .hero{
+      background: radial-gradient(1100px 420px at 12% 10%, rgba(13,110,253,.22), transparent 60%),
+                  radial-gradient(1000px 420px at 80% 0%, rgba(22,163,74,.14), transparent 55%),
+                  linear-gradient(180deg, #ffffff, rgba(255,255,255,.75));
+      border-bottom: 1px solid rgba(17,24,39,.08);
+    }
+    .card{
+      border:1px solid rgba(17,24,39,.08);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(17,24,39,.06);
+    }
+    .pill{
+      background: rgba(13,110,253,.10);
+      color: #0b4bb3;
+      border: 1px solid rgba(13,110,253,.20);
+      padding: .35rem .6rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .9rem;
+      display: inline-flex;
+      gap:.45rem;
+      align-items:center;
+    }
+    .section-title{font-weight: 900; letter-spacing:-.02em; display:flex; align-items:center; gap:.6rem;}
+    .muted{color:var(--muted);}
+    .box{
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(17,24,39,.08);
+      background: rgba(255,255,255,.7);
+    }
+    .check{
+      background: rgba(22,163,74,.10);
+      border: 1px solid rgba(22,163,74,.18);
+    }
+    .warn{
+      background: rgba(245,158,11,.10);
+      border: 1px solid rgba(245,158,11,.18);
+    }
+    .danger{
+      background: rgba(239,68,68,.10);
+      border: 1px solid rgba(239,68,68,.18);
+    }
+    .toc a{text-decoration:none;}
+    .toc a:hover{text-decoration:underline;}
+    pre{
+      background: var(--codebg);
+      color: var(--codeink);
+      border-radius: 14px;
+      padding: 14px 16px;
+      overflow:auto;
+      border: 1px solid rgba(229,231,235,.12);
+      margin: 0;
+    }
+    code{ color: inherit; }
+    .badge-soft{
+      background: rgba(17,24,39,.06);
+      border: 1px solid rgba(17,24,39,.10);
+      color: var(--ink);
+    }
+    kbd{background:#111827;color:#fff;border-radius:.45rem;padding:.1rem .45rem;font-weight:800;}
+  </style>
+</head>
+<body>
+  <header class="hero py-5">
+    <div class="container">
+      <div class="pill mb-3">🎓 Projet E5 • BTS SIO SLAM • Binôme</div>
+      <h1 class="display-6 fw-bold mb-2">Campus HelpDesk</h1>
+      <p class="lead mb-0">Gestion simplifiée des tickets d’interventions informatiques </p>
+    </div>
+  </header>
+
+  <main class="container my-4 my-md-5">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card p-4 toc sticky-lg-top" style="top:18px;">
+          <div class="section-title h5 mb-3">🗂️ Sommaire</div>
+          <ol class="mb-0">
+            <li><a href="#contexte">Contexte</a></li>
+            <li><a href="#objectif">Objectif</a></li>
+            <li><a href="#fonctionnalites">Fonctionnalités attendues</a></li>
+            <li><a href="#cas">Cas d’utilisation</a></li>
+          
+          </ol>
+          <hr class="my-4">
+          <div class="muted small">
+            <div class="fw-semibold text-dark mb-1">Rôles</div>
+            Étudiant • Technicien
+            <div class="fw-semibold text-dark mt-3 mb-1">Workflow</div>
+            OPEN → IN_PROGRESS → RESOLVED → CLOSED
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card p-4 p-md-5">
+          <section id="contexte">
+            <div class="section-title h4 mb-3">1) Contexte</div>
+            <p>
+              Le Campus met à disposition des étudiants des salles informatiques, du matériel pédagogique
+              (vidéoprojecteurs, postes fixes, Wi‑Fi, imprimantes…) ainsi qu’un réseau interne.
+            </p>
+            <p>
+              Aujourd’hui, les incidents (poste en panne, Wi‑Fi instable, projecteur défectueux…) sont souvent signalés de manière informelle
+              (à l’oral, par mail, par message). Cela entraîne une <strong>perte d’informations</strong>,
+              un <strong>manque de suivi</strong> et l’absence d’<strong>historique</strong>.
+            </p>
+            <div class="box warn">
+              <div class="fw-semibold">Problèmes constatés</div>
+              <ul class="mb-0">
+                <li>Demandes non tracées et difficiles à prioriser</li>
+                <li>Suivi compliqué (qui s’en occupe ? où en est-on ?)</li>
+                <li>Peu de données pour analyser les incidents récurrents</li>
+              </ul>
+            </div>
+          </section>
+
+          <hr class="my-4">
+
+          <section id="objectif">
+            <div class="section-title h4 mb-3">2) Objectif du projet</div>
+            <p>
+              Concevoir une application web interne de <strong>gestion de tickets d’interventions informatiques</strong> permettant :
+            </p>
+            <ul>
+              <li>aux <strong>étudiants</strong> de déclarer et suivre leurs incidents,</li>
+              <li>aux <strong>techniciens</strong> de consulter, prioriser et traiter les demandes,</li>
+              <li>d’assurer une <strong>traçabilité</strong> et un <strong>historique</strong> des échanges.</li>
+            </ul>
+           
+          </section>
+
+          <hr class="my-4">
+
+          <section id="fonctionnalites">
+            <div class="section-title h4 mb-3">3) Fonctionnalités attendues</div>
+
+            <h3 class="section-title h5 mt-3">3.1 Authentification & rôles</h3>
+            <ul>
+              <li>Formulaire de connexion (email + mot de passe).</li>
+              <li>Deux rôles : <span class="badge badge-soft">STUDENT</span> et <span class="badge badge-soft">TECH</span>.</li>
+              <li>Après connexion, l’utilisateur accède à une interface adaptée à son rôle.</li>
+              <li>Les routes API sont protégées (accès interdit si non connecté).</li>
+            </ul>
+
+            <h3 class="section-title h5 mt-4">3.2 Création d’un ticket (Étudiant)</h3>
+            <p>Un étudiant doit pouvoir créer un ticket en renseignant :</p>
+            <ul>
+              <li>un <strong>titre</strong> (résumé du problème),</li>
+              <li>une <strong>description</strong> détaillée,</li>
+              <li>une <strong>catégorie</strong> (ex : Réseau, Matériel, Logiciel),</li>
+              <li>une <strong>priorité</strong> (faible, moyenne, élevée).</li>
+            </ul>
+            <div class="box check">
+              À la création : statut initial <strong>OPEN</strong>, date de création, auteur du ticket.
+            </div>
+
+            <h3 class="section-title h5 mt-4">3.3 Consultation des tickets</h3>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="box">
+                  <div class="fw-semibold">Étudiant</div>
+                  <ul class="mb-0">
+                    <li>Liste <strong>ses</strong> tickets</li>
+                    <li>Détail d’un ticket</li>
+                    <li>Visualisation statut/priorité</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="box">
+                  <div class="fw-semibold">Technicien</div>
+                  <ul class="mb-0">
+                    <li>Liste <strong>tous</strong> les tickets</li>
+                    <li>Filtres (statut, priorité)</li>
+                    <li>Accès au détail</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="section-title h5 mt-4">3.4 Traitement d’un ticket (Technicien)</h3>
+            <ul>
+              <li>Prendre en charge un ticket (assignation à soi).</li>
+              <li>Changer le statut : <strong>OPEN → IN_PROGRESS → RESOLVED → CLOSED</strong>.</li>
+              <li>Répondre via des messages/commentaires.</li>
+            </ul>
+
+            <h3 class="section-title h5 mt-4">3.5 Messages / commentaires</h3>
+            <ul>
+              <li>Chaque ticket possède un fil de discussion.</li>
+              <li>Les messages sont horodatés et affichent l’auteur.</li>
+              <li>Seuls les utilisateurs autorisés (selon le ticket) peuvent poster.</li>
+            </ul>
+
+            <h3 class="section-title h5 mt-4">3.6 Sécurité & contrôle d’accès</h3>
+            <div class="box warn">
+              <ul class="mb-0">
+                <li>Un étudiant ne peut accéder qu’à <strong>ses</strong> tickets.</li>
+                <li>Un technicien peut accéder à tous les tickets.</li>
+                <li>Le changement de statut/assignation est réservé au technicien.</li>
+              </ul>
+            </div>
+          </section>
+
+          <hr class="my-4">
+
+          <section id="cas">
+            <div class="section-title h4 mb-3">4) Cas d’utilisation (formulation littérale)</div>
+
+            <div class="box mb-3">
+              <div class="fw-semibold">Cas 1 — Connexion utilisateur</div>
+              <div class="muted mb-2">Acteur : Utilisateur • Précondition : compte existant</div>
+              <ol class="mb-0">
+                <li>L’utilisateur saisit email + mot de passe.</li>
+                <li>Le système vérifie les identifiants.</li>
+                <li>Si OK : l’utilisateur est authentifié et accède à son interface.</li>
+                <li>Sinon : un message d’erreur est affiché.</li>
+              </ol>
+            </div>
+
+            <div class="box mb-3">
+              <div class="fw-semibold">Cas 2 — Création d’un ticket</div>
+              <div class="muted mb-2">Acteur : Étudiant • Précondition : connecté</div>
+              <ol class="mb-0">
+                <li>L’étudiant ouvre “Nouveau ticket”.</li>
+                <li>Il remplit le formulaire (titre, description, catégorie, priorité).</li>
+                <li>Il valide.</li>
+                <li>Le système enregistre le ticket (statut OPEN) et l’affiche dans “Mes tickets”.</li>
+              </ol>
+            </div>
+
+            <div class="box mb-3">
+              <div class="fw-semibold">Cas 3 — Consultation des tickets</div>
+              <div class="muted mb-2">Acteur : Étudiant / Technicien • Précondition : connecté</div>
+              <ul class="mb-0">
+                <li>Étudiant : consulte uniquement ses tickets.</li>
+                <li>Technicien : consulte tous les tickets (avec filtres).</li>
+              </ul>
+            </div>
+
+            <div class="box mb-3">
+              <div class="fw-semibold">Cas 4 — Prise en charge d’un ticket</div>
+              <div class="muted mb-2">Acteur : Technicien • Précondition : ticket existant</div>
+              <ol class="mb-0">
+                <li>Le technicien ouvre le détail d’un ticket.</li>
+                <li>Il clique sur “Prendre en charge”.</li>
+                <li>Le ticket lui est assigné et passe en IN_PROGRESS.</li>
+              </ol>
+            </div>
+
+            <div class="box">
+              <div class="fw-semibold">Cas 5 — Clôture d’un ticket</div>
+              <div class="muted mb-2">Acteur : Technicien • Précondition : ticket en cours</div>
+              <ol class="mb-0">
+                <li>Le technicien passe le ticket en RESOLVED (résolu) et répond au besoin.</li>
+                <li>Le ticket peut ensuite être passé en CLOSED (fermé).</li>
+                <li>L’étudiant voit le statut mis à jour.</li>
+              </ol>
+            </div>
+          </section>
+
+          <hr class="my-4">
+
+          
+
+          <hr class="my-4">
+
+          
+
+          <hr class="my-4">
+          
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

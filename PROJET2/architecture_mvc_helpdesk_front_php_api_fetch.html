@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus HelpDesk — Architecture MVC (Front PHP + API PHP + fetch)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f7fb; --ink:#111827; --muted:#6b7280;
+      --card:#ffffff; --codebg:#0b1220; --codeink:#e5e7eb;
+      --line: rgba(17,24,39,.10); --soft: rgba(17,24,39,.04);
+      --blue: rgba(13,110,253,.10); --green: rgba(22,163,74,.10);
+      --amber: rgba(245,158,11,.10); --red: rgba(239,68,68,.10);
+    }
+    body{background:var(--bg); color:var(--ink);}
+    .card{border-radius:18px; border:1px solid rgba(17,24,39,.08); box-shadow:0 10px 30px rgba(17,24,39,.06);}
+    .muted{color:var(--muted);}
+    pre{
+      background:var(--codebg);
+      color:var(--codeink);
+      padding:14px 16px;
+      border-radius:14px;
+      overflow:auto;
+      border:1px solid rgba(229,231,235,.12);
+      margin:0;
+    }
+    code{color:inherit;}
+    .pill{
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.35rem .6rem; border-radius:999px;
+      background:var(--blue); border:1px solid rgba(13,110,253,.20);
+      color:#0b4bb3; font-weight:800; font-size:.9rem;
+    }
+    .k{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: rgba(17,24,39,.06);
+      border: 1px solid rgba(17,24,39,.10);
+      padding: .08rem .35rem;
+      border-radius: .45rem;
+      font-size: .95em;
+    }
+    .box{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      background: rgba(255,255,255,.80);
+    }
+    .box.blue{background: var(--blue); border-color: rgba(13,110,253,.18);}
+    .box.green{background: var(--green); border-color: rgba(22,163,74,.18);}
+    .box.amber{background: var(--amber); border-color: rgba(245,158,11,.18);}
+    .box.red{background: var(--red); border-color: rgba(239,68,68,.18);}
+    .section-title{font-weight:900; letter-spacing:-.02em; display:flex; align-items:center; gap:.6rem;}
+    .tag{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.2rem .55rem; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:800;
+      font-size:.85rem;
+    }
+    .toc a{text-decoration:none;}
+    .toc a:hover{text-decoration:underline;}
+    .table thead th{background: var(--soft);}
+    .grid2{display:grid; grid-template-columns: 1fr; gap:12px;}
+    @media (min-width: 992px){ .grid2{ grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="py-5" style="background:
+  radial-gradient(1100px 420px at 12% 10%, rgba(13,110,253,.22), transparent 60%),
+  radial-gradient(1000px 420px at 80% 0%, rgba(22,163,74,.14), transparent 55%),
+  linear-gradient(180deg, #ffffff, rgba(255,255,255,.75));
+  border-bottom:1px solid rgba(17,24,39,.08);">
+  <div class="container">
+    <div class="pill mb-3">🏗️ Architecture MVC • Front PHP + API PHP + fetch</div>
+    <h1 class="display-6 fw-bold mb-2">Campus HelpDesk — Version MVC </h1>
+    
+  </div>
+</header>
+
+<main class="container my-4 my-md-5">
+  <div class="row g-4">
+    <aside class="col-lg-4">
+      <div class="card p-4 sticky-lg-top" style="top:18px;">
+        <div class="section-title h5 mb-3">🗂️ Sommaire</div>
+        <ol class="toc mb-0">
+          <li><a href="#contexte">Contexte & objectifs</a></li>
+          <li><a href="#cas">Cas d’utilisation (attendus)</a></li>
+          <li><a href="#choix">Architecture choisie (MVC + API)</a></li>
+          <li><a href="#flux">Flux de fonctionnement (Front / API)</a></li>
+          <li><a href="#arbo">Arborescence MVC</a></li>
+          <li><a href="#responsabilites">Rôle de chaque couche (M/V/C)</a></li>
+          <li><a href="#fetch">Dose JS : 3–4 fetch (ciblés)</a></li>
+          <li><a href="#etapes">Étapes de réalisation (S0 → S2/S3)</a></li>
+          <li><a href="#cyber">Points cybersécurité à intégrer</a></li>
+          <li><a href="#preuves">Preuves attendues (E5)</a></li>
+          <li><a href="#checklist">Checklist finale</a></li>
+        </ol>
+      </div>
+    </aside>
+
+    <section class="col-lg-8">
+      <div class="card p-4 p-md-5">
+
+        <section id="contexte">
+          <div class="section-title h4 mb-3">1) Contexte & objectifs</div>
+          <div class="box">
+            <p class="mb-2">
+              Le Campus souhaite un outil de <strong>gestion de tickets</strong> pour déclarer et suivre des incidents informatiques
+              (Wi‑Fi, matériel, logiciels, comptes…).
+            </p>
+            <ul class="mb-0">
+              <li>Les <strong>étudiants</strong> créent des tickets et suivent leurs demandes.</li>
+              <li>Les <strong>techniciens</strong> traitent les tickets (réponses, changement de statut).</li>
+              <li>Un <strong>admin</strong> peut superviser (compte/paramètres — minimal).</li>
+            </ul>
+          </div>
+
+          <div class="box green mt-3">
+            <div class="fw-bold mb-1">Objectif pédagogique</div>
+            <ul class="mb-0">
+              <li>Projet E5 : <strong>authentification</strong> (session), <strong>BDD</strong>, <strong>CRUD</strong>, <strong>droits</strong>.</li>
+              <li>Comprendre HTTP : JSON + statuts + tests Postman + Network.</li>
+              <li>Découvrir MVC : code organisé et lisible.</li>
+              <li>Ajouter une “dose” de JS (fetch + DOM) sans faire une SPA.</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="cas">
+          <div class="section-title h4 mb-3">2) Cas d’utilisation (attendus)</div>
+
+          <div class="box">
+            <div class="fw-bold mb-2">Rôles</div>
+            <div><span class="tag">ETUDIANT</span> <span class="tag">TECH</span> <span class="tag">ADMIN</span></div>
+          </div>
+
+          <div class="grid2 mt-3">
+            <div class="box">
+              <div class="fw-bold">Cas ETUDIANT</div>
+              <ul class="mb-0">
+                <li>Se connecter / se déconnecter</li>
+                <li>Créer un ticket (titre, description, priorité, catégorie)</li>
+                <li>Voir la liste de <strong>ses</strong> tickets</li>
+                <li>Voir le détail d’un ticket</li>
+                <li>Ajouter un message sur son ticket</li>
+              </ul>
+            </div>
+            <div class="box">
+              <div class="fw-bold">Cas TECH</div>
+              <ul class="mb-0">
+                <li>Se connecter / se déconnecter</li>
+                <li>Voir <strong>tous</strong> les tickets</li>
+                <li>Filtrer les tickets (statut, priorité)</li>
+                <li>Répondre à un ticket</li>
+                <li>Changer le statut (OPEN → IN_PROGRESS → RESOLVED)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="box mt-3">
+            <div class="fw-bold">Cas ADMIN (minimal)</div>
+            <ul class="mb-0">
+              <li>Se connecter / se déconnecter</li>
+              <li>Accéder à un tableau de bord (placeholder S0)</li>
+              <li>(Option) gérer catégories / comptes (si temps)</li>
+            </ul>
+          </div>
+
+          <div class="box amber mt-3">
+            <div class="fw-bold mb-1">Règle de sécurité incontournable</div>
+            <div>Un étudiant ne doit jamais pouvoir consulter/modifier le ticket d’un autre étudiant (contrôle côté serveur).</div>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="choix">
+          <div class="section-title h4 mb-3">3) Architecture choisie (MVC + API)</div>
+
+          <div class="box blue">
+            <div class="fw-bold mb-1">On garde le même projet, mais organisé</div>
+            <ul class="mb-0">
+              <li><strong>Front SSR</strong> : pages PHP rendues côté serveur (Bootstrap) via des <strong>Controllers</strong>.</li>
+              <li><strong>API JSON</strong> : endpoints PHP (Controllers API) qui renvoient du JSON.</li>
+              <li><strong>JS</strong> : 3–4 fetch ciblés qui consomment l’API et mettent à jour le DOM.</li>
+              <li><strong>Models</strong> : accès BDD via PDO (requêtes préparées) + méthodes (find/create/update…).</li>
+            </ul>
+          </div>
+
+          <div class="box red mt-3">
+            <div class="fw-bold mb-1">Ce qu’on ne fait pas</div>
+            <ul class="mb-0">
+              <li>Pas de SPA complète</li>
+              <li>Pas de framework front</li>
+              <li>Pas de dizaines d’endpoints</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="flux">
+          <div class="section-title h4 mb-3">4) Flux de fonctionnement</div>
+
+          <div class="box">
+            <div class="fw-bold mb-2">4.1 Front SSR (pages PHP)</div>
+<pre><code>Navigateur → /tickets
+   ↓
+Controller (TicketController@index)
+   ↓
+Model (TicketModel::findForUser)
+   ↓
+View (views/tickets/index.php)
+   ↓
+HTML Bootstrap renvoyé au navigateur</code></pre>
+          </div>
+
+          <div class="box mt-3">
+            <div class="fw-bold mb-2">4.2 API JSON (fetch)</div>
+<pre><code>Navigateur (JS fetch) → /api/tickets?status=OPEN
+   ↓
+API Controller (Api/TicketApiController@index)
+   ↓
+Model (TicketModel::findForUser + filtre)
+   ↓
+Réponse JSON + code HTTP (200/401/403/...)</code></pre>
+          </div>
+
+          <div class="box amber mt-3">
+            <div class="fw-bold mb-1">Sessions</div>
+            <div>
+              L’authentification repose sur une <strong>session</strong> (cookie). En JS :
+              <span class="k">fetch(..., { credentials: "include" })</span>
+            </div>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="arbo">
+          <div class="section-title h4 mb-3">5) Arborescence MVC (simple & pédagogique)</div>
+
+<pre><code>campus-helpdesk/
+  public/
+    index.php                    # point d’entrée (router front + api)
+    assets/
+      css/style.css
+      js/app.js                  # 3–4 fetch + DOM
+  app/
+    core/
+      Database.php               # connexion PDO
+      Auth.php                   # sessions + requireLogin/Role
+      Router.php                 # mini routeur
+      Response.php               # helpers redirect/json (optionnel)
+    controllers/
+      AuthController.php         # login/logout (front)
+      TicketController.php       # pages tickets (front)
+      DashboardController.php    # user/tech/admin (front)
+      Api/
+        AuthApiController.php    # /api/me (JSON)
+        TicketApiController.php  # /api/tickets, PUT status (JSON)
+    models/
+      UserModel.php
+      TicketModel.php
+      CategoryModel.php
+      MessageModel.php
+    views/
+      layouts/
+        main.php                 # layout bootstrap
+      partials/
+        navbar.php
+        alerts.php
+      auth/
+        login.php
+      dashboards/
+        user.php
+        tech.php
+        admin.php
+      tickets/
+        index.php                # liste + création (SSR)
+        show.php                 # détail + messages (SSR)
+  db/
+    schema.sql
+    seed.sql
+  docs/
+    endpoints.md
+    mcd.md
+    scenarios_test.md</code></pre>
+
+          <div class="box green mt-3">
+            <div class="fw-bold mb-1">Pourquoi cette structure est “E5 solide” ?</div>
+            <ul class="mb-0">
+              <li>Lisible : on sait où mettre chaque chose.</li>
+              <li>Évolutif : on ajoute des vues / endpoints sans casser le reste.</li>
+              <li>Testable : Postman sur l’API + navigation sur le front.</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="responsabilites">
+          <div class="section-title h4 mb-3">6) Responsabilités : Model / View / Controller</div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Couche</th>
+                  <th>Responsabilité</th>
+                  <th>Exemples</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="tag">Model</span></td>
+                  <td>Accès aux données (PDO) + méthodes (find/create/update)</td>
+                  <td><span class="k">TicketModel::findForUser()</span></td>
+                </tr>
+                <tr>
+                  <td><span class="tag">View</span></td>
+                  <td>Affichage HTML/Bootstrap avec variables PHP</td>
+                  <td><span class="k">views/tickets/index.php</span></td>
+                </tr>
+                <tr>
+                  <td><span class="tag">Controller</span></td>
+                  <td>Reçoit la requête, appelle le model, choisit vue ou JSON</td>
+                  <td><span class="k">TicketController@index</span>, <span class="k">Api/TicketApiController@updateStatus</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="box amber">
+            <div class="fw-bold mb-1">Règle</div>
+            <div>Le Controller ne doit pas contenir de SQL : le SQL est dans le Model.</div>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="fetch">
+          <div class="section-title h4 mb-3">7) “Dose JS” : 3–4 fetch (ciblés)</div>
+
+          <div class="grid2">
+            <div class="box blue">
+              <div class="fw-bold">Fetch #1 — GET /api/me</div>
+              <div class="muted mb-2">Afficher nom + rôle dans la navbar</div>
+              <ul class="mb-0">
+                <li>Au chargement de la page</li>
+                <li>JS met à jour le DOM</li>
+              </ul>
+            </div>
+            <div class="box blue">
+              <div class="fw-bold">Fetch #2 — GET /api/tickets?status=...</div>
+              <div class="muted mb-2">Filtrer la liste sans recharger</div>
+              <ul class="mb-0">
+                <li>Event <span class="k">change</span> sur un select</li>
+                <li>Remplace la liste dans le DOM</li>
+              </ul>
+            </div>
+            <div class="box blue">
+              <div class="fw-bold">Fetch #3 — PUT /api/tickets/{id}</div>
+              <div class="muted mb-2">Changer statut (TECH) sans recharger</div>
+              <ul class="mb-0">
+                <li>Bouton “IN_PROGRESS” / “RESOLVED”</li>
+                <li>Update badge statut dans le DOM</li>
+              </ul>
+            </div>
+            <div class="box amber">
+              <div class="fw-bold">Fetch #4 (bonus) — POST /api/tickets</div>
+              <div class="muted mb-2">Créer ticket en AJAX (optionnel)</div>
+              <ul class="mb-0">
+                <li>Si la création SSR est déjà OK, ce fetch est un bonus</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="box mt-3">
+            <div class="fw-bold mb-1">Minimum JS attendu</div>
+            <ul class="mb-0">
+              <li><span class="k">querySelector</span>, <span class="k">addEventListener</span>, <span class="k">innerHTML</span></li>
+              <li><span class="k">fetch</span> + <span class="k">async/await</span></li>
+              <li><span class="k">response.json()</span></li>
+              <li><span class="k">credentials: "include"</span> (sessions)</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="etapes">
+          <div class="section-title h4 mb-3">8) Étapes de réalisation (S0 → S2/S3)</div>
+
+          <div class="box green">
+            <div class="fw-bold mb-1">S0 (4h) — Socle MVC</div>
+            <ul class="mb-0">
+              <li>BDD : schema.sql + seed.sql</li>
+              <li>Core : Database + Auth + Router</li>
+              <li>AuthController + View login</li>
+              <li>Dashboards par rôle (views + controller)</li>
+              <li>Sécurité : hash, prepare, htmlspecialchars, session_regenerate_id</li>
+            </ul>
+          </div>
+
+          <div class="box mt-3">
+            <div class="fw-bold">S1 (4h) — Tickets SSR + messages + 2 fetch</div>
+            <ul class="mb-0">
+              <li>TicketController : index + show + store</li>
+              <li>TicketModel : findForUser + create</li>
+              <li>MessageModel : list + create</li>
+              <li>Fetch #1 (/api/me) + Fetch #2 (filtre)</li>
+            </ul>
+          </div>
+
+          <div class="box mt-3">
+            <div class="fw-bold">S2 (4h) — TECH : statut + API PUT</div>
+            <ul class="mb-0">
+              <li>Api/TicketApiController : updateStatus (PUT)</li>
+              <li>Contrôle rôle TECH côté serveur</li>
+              <li>Fetch #3 (PUT) + update DOM</li>
+              <li>Preuves Postman + Network</li>
+            </ul>
+          </div>
+
+          <div class="box amber mt-3">
+            <div class="fw-bold">S3 (optionnel) — Bonus + stabilisation</div>
+            <ul class="mb-0">
+              <li>Fetch #4 (POST) + rafraîchissement liste</li>
+              <li>Recherche / filtre priorité</li>
+              <li>Finitions + entraînement oral</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="cyber">
+          <div class="section-title h4 mb-3">9) Points cybersécurité à intégrer</div>
+
+          <div class="box red">
+            <div class="fw-bold mb-1">À appliquer dans le projet</div>
+            <ul class="mb-0">
+              <li><strong>Mots de passe</strong> : hash (password_hash/verify), jamais en clair</li>
+              <li><strong>SQL</strong> : requêtes préparées PDO, pas de concaténation</li>
+              <li><strong>XSS</strong> : htmlspecialchars sur toutes les sorties</li>
+              <li><strong>Session</strong> : regenerate_id après login + logout propre</li>
+              <li><strong>Accès</strong> : requireLogin + requireRole sur pages et API</li>
+            </ul>
+          </div>
+
+          <div class="box amber mt-3">
+            <div class="fw-bold mb-1">CSRF (bonus)</div>
+            <div>Option : token CSRF dans les formulaires si vous avez le temps.</div>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="preuves">
+          <div class="section-title h4 mb-3">10) Preuves attendues (E5)</div>
+          <div class="grid2">
+            <div class="box">
+              <div class="fw-bold">Preuves techniques</div>
+              <ul class="mb-0">
+                <li>Postman : GET/POST/PUT + 401/403</li>
+                <li>Network : cookie session + JSON</li>
+                <li>SQL : schema + seed</li>
+              </ul>
+            </div>
+            <div class="box">
+              <div class="fw-bold">Docs</div>
+              <ul class="mb-0">
+                <li>MCD</li>
+                <li>Endpoints</li>
+                <li>Scénarios de test</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <hr class="my-4">
+
+        <section id="checklist">
+          <div class="section-title h4 mb-3">11) Checklist finale</div>
+          <div class="box green">
+            <ul class="mb-0">
+              <li>☐ MVC en place (controllers/models/views)</li>
+              <li>☐ Auth session + rôles + pages protégées</li>
+              <li>☐ Tickets SSR : créer/lister/voir + messages</li>
+              <li>☐ API JSON : /api/me + /api/tickets + PUT statut</li>
+              <li>☐ 3 fetch min + DOM</li>
+              <li>☐ Sécurité appliquée (hash/prepare/htmlspecialchars/sessions)</li>
+              <li>☐ Preuves prêtes (Postman + Network + SQL)</li>
+            </ul>
+          </div>
+
+          <div class="alert alert-primary mt-4 mb-0">
+            🎯 Objectif : un projet <strong>fonctionnel</strong>, <strong>lisible</strong> (MVC), et <strong>défendable</strong> à l’épreuve E5.
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
